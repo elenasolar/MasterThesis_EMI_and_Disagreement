@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+/data/reddit/
+/R_MasterThesis/output/
+/code/EMI/output
+
+/code/preprocessing/PoliticalDiscussion/output
