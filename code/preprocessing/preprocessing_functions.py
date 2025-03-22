@@ -321,6 +321,16 @@ def find_relevant_submissions(df_comments, df_submissions, submission_id_col, co
     
     # filter relevant submissions with > avg nr of comments
     df_submissions_filtered = df_submissions[df_submissions['id'].isin(relevant_submissions['submission_id'])].reset_index(drop=True)
+    
+    # filter submissions with non empty or removed self-text
+    df_submissions_filtered = df_submissions_filtered[df_submissions_filtered['selftext'] != "[removed]"].reset_index(drop=True)
+    df_submissions_filtered = df_submissions_filtered[df_submissions_filtered['selftext'] != "[deleted]"].reset_index(drop=True)
+    df_submissions_filtered = df_submissions_filtered[df_submissions_filtered['selftext'] != "removed"].reset_index(drop=True)
+    df_submissions_filtered = df_submissions_filtered[df_submissions_filtered['selftext'] != "deleted"].reset_index(drop=True)
+    df_submissions_filtered = df_submissions_filtered[df_submissions_filtered['selftext'] != ""].reset_index(drop=True)
+    df_submissions_filtered = df_submissions_filtered[df_submissions_filtered['selftext'].notna()].reset_index(drop=True)
+    
+    
     # filter comments, with parent in relevant_submissions_id
     df_comments_filtered = df_comments[df_comments[submission_id_col].isin(df_submissions_filtered['id'])].reset_index(drop=True)
     
@@ -454,8 +464,25 @@ def preprocess_texts(data, length):
     # filter deleted texts 
     data = data[data['body_child'] != "[deleted]"]
     data = data[data['body_child'] != "[removed]"]
+    data = data[data['body_child'] != "deleted"]
+    data = data[data['body_child'] != "removed"]
+    data = data[data['body_child'] != ""]
+    data = data[data['body_child'].notna()]
+
     data = data[data['body_parent'] != "[deleted]"]
     data = data[data['body_parent'] != "[removed]"]
+    data = data[data['body_parent'] != "deleted"]
+    data = data[data['body_parent'] != "removed"]
+    data = data[data['body_parent'] != ""]
+    data = data[data['body_parent'].notna()]
+
+    data = data[data['submission_text'] != "[deleted]"]
+    data = data[data['submission_text'] != "[removed]"]
+    data = data[data['submission_text'] != "deleted"]
+    data = data[data['submission_text'] != "removed"]
+    data = data[data['submission_text'] != ""]
+    data = data[data['submission_text'].notna()]
+    
 
     # filter deleted authors
     data = data[data['author_parent'] != "[deleted]"]
