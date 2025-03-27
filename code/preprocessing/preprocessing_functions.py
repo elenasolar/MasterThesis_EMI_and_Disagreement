@@ -537,7 +537,6 @@ def preprocess_texts(data, length):
     #data['submission_text'] = data['submission_text'].str.replace(r'([@])', r' \1 ', regex = True) # separate @ from user mentions
     data['submission_text'] = data['submission_text'].str.replace(r"[^a-zA-Z0-9\s.,!?'-]", '', regex = True) # replace special characters
 
-
     # filter too short texts
     replies_to_remove = []
     comments_to_remove = []
@@ -561,6 +560,14 @@ def preprocess_texts(data, length):
 
     data = data.drop_duplicates(subset = ["body_child", "body_parent", "author_parent", "author_child"],
                                           keep = 'last').reset_index(drop = True)
+    
+    # need to check again, after cleaning
+    data = data[data['body_child'] != ""].reset_index(drop = True)
+    data = data[data['body_parent'] != ""].reset_index(drop = True)
+    data = data[data['submission_text'] != ""].reset_index(drop = True)
+    data = data[data['body_child'] != " "].reset_index(drop = True)
+    data = data[data['body_parent'] != " "].reset_index(drop = True)
+    data = data[data['submission_text'] != " "].reset_index(drop = True)
     
    
     return data
