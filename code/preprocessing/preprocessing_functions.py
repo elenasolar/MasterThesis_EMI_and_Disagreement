@@ -487,6 +487,7 @@ def preprocess_texts(data, length):
     # filter deleted authors
     data = data[data['author_parent'] != "[deleted]"]
     data = data[data['author_child'] != "[deleted]"]
+    data = data[data['author_submission'] != "[deleted]"]
 
     # filter texts that have been written by a bot = appear too often
     # should already be removes, as body_parent and authors will be deleted/removed
