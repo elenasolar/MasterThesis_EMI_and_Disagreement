@@ -6,7 +6,8 @@ import json
 from datetime import datetime
 import pyarrow as pa
 import pyarrow.parquet as pq
-
+import matplotlib.pyplot as plt
+import numpy as np
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 def import_subreddit_to_parquet(filepath, parquet_filepath, chunk_size=100_000, data_type = 'comments'):
@@ -210,6 +211,8 @@ def get_submissions(df):
     # sort by creation time
     data_frame = data_frame.sort_values(by = "created_utc")
 
+    print("Nr. of pulled submissions", len(data_frame))
+
     
     return data_frame
 
@@ -244,6 +247,8 @@ def get_comments_and_replies(df):
 
     # sort by creation time
     data_frame = data_frame.sort_values(by = "created_utc")
+
+    print("Nr. of pulled comments & replies", len(data_frame))
 
     return data_frame
     
@@ -289,7 +294,53 @@ def assign_types(df_both, df_submissions):
     # df.loc[df['parent_id'].isin(replies2['id']), 'type'] = 'reply_3'
     # replies3 = df[df['type'] == 'reply_3'].reset_index(drop = True)
 
+    print("Nr. of comments", len(comments))
+    print("Nr. of replies", len(replies1))
+
     return comments, replies1
+
+
+
+#-------------------
+def plot_submissions_comments(df_comments, df_submissions, submission_id_col, comment_id_col, log_x = True, log_y = True):
+
+    relevant_submissions = pd.DataFrame(df_comments.groupby(submission_id_col)[comment_id_col].count()).reset_index().rename(columns={submission_id_col : 'submission_id', comment_id_col : 'count'})
+    print("Mean nr. of comments per submission", relevant_submissions['count'].mean())
+    print("Nr. of submission, that I have comments for", len(relevant_submissions))
+
+    #relevant_submissions
+
+    plt_data = pd.DataFrame(relevant_submissions['count'].value_counts()).rename(columns={'count' : 'class_count'}).reset_index().rename(columns={'count' : 'comment_count'})
+    plt_data
+
+    plt_data['log_comm_count'] = plt_data['comment_count'].apply(lambda x: np.log(x))
+    plt_data['log_class_count'] = plt_data['class_count'].apply(lambda x: np.log(x))
+    plt_data
+
+    if log_x:
+        x = plt_data['log_comm_count']
+        x_label = "log(comment count)"
+    else:
+        x = plt_data['comment_count']
+        x_label = "comment count"
+
+    if log_y:
+        y = plt_data['log_class_count']
+        y_label = "log(#submissions)"
+    else:
+        y = plt_data['class_count']
+        y_label = "#submissions"
+
+
+
+    
+    plt.plot(x, y)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.title("Nr of Comments per Submission")
+    plt.show
+    
+
 
 
 
@@ -298,7 +349,7 @@ def find_relevant_submissions(df_comments, df_submissions, submission_id_col, co
 
     """
     Function to compute the mean of comments per submission in that subreddit, using the comments df.
-    Then, filter to only retain submissions with above-average comments in the submissions_df.
+    Then, filter to only retain submissions, which do not have empty texts.
     Finally, filter comments, to only be comments with parent_id in the relevant submissions.
 
     Parameter:
@@ -315,13 +366,20 @@ def find_relevant_submissions(df_comments, df_submissions, submission_id_col, co
     """
     
     relevant_submissions = pd.DataFrame(df_comments.groupby(submission_id_col)[comment_id_col].count()).reset_index().rename(columns={submission_id_col : 'submission_id', comment_id_col : 'count'})
-    print(relevant_submissions['count'].mean())
+    print("Mean nr. of comments per submission", relevant_submissions['count'].mean())
+    print("Nr. of submission, that I have comments for", len(relevant_submissions))
 
-    relevant_submissions = relevant_submissions[relevant_submissions['count'] >= relevant_submissions['count'].mean()]
+    #relevant_submissions = relevant_submissions[relevant_submissions['count'] >= relevant_submissions['count'].mean()]
     
+
     # filter relevant submissions with > avg nr of comments
     df_submissions_filtered = df_submissions[df_submissions['id'].isin(relevant_submissions['submission_id'])].reset_index(drop=True)
     
+    if(len(df_submissions_filtered) == len(relevant_submissions)):
+        print("All submissions found")
+    else:
+        print("Some submissions could not be found")
+
     # filter submissions with non empty or removed self-text
     df_submissions_filtered = df_submissions_filtered[df_submissions_filtered['selftext'] != "[removed]"].reset_index(drop=True)
     df_submissions_filtered = df_submissions_filtered[df_submissions_filtered['selftext'] != "[deleted]"].reset_index(drop=True)
@@ -330,18 +388,25 @@ def find_relevant_submissions(df_comments, df_submissions, submission_id_col, co
     df_submissions_filtered = df_submissions_filtered[df_submissions_filtered['selftext'] != ""].reset_index(drop=True)
     df_submissions_filtered = df_submissions_filtered[df_submissions_filtered['selftext'].notna()].reset_index(drop=True)
     
+    print("Removing empty submissions deleted", len(relevant_submissions) - len(df_submissions_filtered), "submissions")
+    print("Kept", len(df_submissions_filtered), "submissions")
     
     # filter comments, with parent in relevant_submissions_id
     df_comments_filtered = df_comments[df_comments[submission_id_col].isin(df_submissions_filtered['id'])].reset_index(drop=True)
     
+    print("Nr. of comments, whose submission is retaied", len(df_comments_filtered))
+    print("Share", len(df_comments_filtered) / len(df_comments))
+
+
     return df_submissions_filtered, df_comments_filtered
     
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-def match_reply_comment_submission(replies, comments, submissions, merge_type):
+def match_reply_comment_submission(replies, comments, submissions, merge_type, subreddit):
 
     """
     Function to match first level replies to the still-relevant comments, and these to the still-relevant submissions.
+    Then, filter for subreddit and adjust date
 
     Parameters:
     -----------
@@ -349,6 +414,7 @@ def match_reply_comment_submission(replies, comments, submissions, merge_type):
         - comments: all relevant comments 
         - submissions: all relevant submissions
         - merge_type: how-argument in pd.merge() function
+        - subreddit: subreddit 
 
     Returns:
     --------
@@ -367,7 +433,7 @@ def match_reply_comment_submission(replies, comments, submissions, merge_type):
     
 
     comments_temp = comments[comments['id'].isin(replies_temp['msg_id_parent'])]
-              
+           
 
     comments_temp = comments_temp[['parent_id', 'id', 'body', 'subreddit', 'created_utc', 'author', 'ups', 'score', 'downs']].reset_index(drop= True)
     comments_temp.rename(columns = {'parent_id' : 'submission_id', 
@@ -380,7 +446,7 @@ def match_reply_comment_submission(replies, comments, submissions, merge_type):
                             'downs': 'downs_parent'}, inplace=True)
     
     submissions_temp = submissions[submissions['id'].isin(comments_temp['submission_id'])]
-              
+            
 
     submissions_temp = submissions_temp[['id', 'selftext', 'subreddit', 'created_utc', 'author', 'ups', 'score']].reset_index(drop= True)
     submissions_temp.rename(columns = {'id' : 'submission_id',
@@ -400,32 +466,11 @@ def match_reply_comment_submission(replies, comments, submissions, merge_type):
     df_result = df_result.drop_duplicates(subset = ["body_child", "body_parent", "author_parent", "author_child"],
                                           keep = 'last').reset_index(drop = True)
     
-    
-
-
-    return df_result 
-
-
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-def filter_subreddit(data, subreddit):
-
-    """
-    Function to filter for relevant subreddit. Written to work on DEBAGREE data.
-    Self pulled reddits will be one subreddit only, already
-    
-    Parameters:
-    ----------
-        - data: the data frame of all data (different subreddits)
-        - subreddit: string, name of the subreddit to filter for
-
-    Return:
-    -------
-        - data_subreddit: all rows belonging to the subreddit
-    
-    """
-
-    # and subset only Brexit data
-    data_subreddit = data[data['subreddit'] == subreddit]
+    print("Nr. of unique replies", len(set(df_result['msg_id_child'])))
+    print("Nr. of unique comments", len(set(df_result['msg_id_parent'])))
+    print("Nr. of unique submissions", len(set(df_result['submission_id'])))
+        
+    data_subreddit = df_result[df_result['subreddit'] == subreddit]
 
     # reset index
     data_subreddit.reset_index(inplace=True, drop = True)
@@ -438,7 +483,11 @@ def filter_subreddit(data, subreddit):
     if 'label' in data_subreddit.columns:
         data_subreddit['label'] = data_subreddit['label'].replace({0 : 'neg', 1 : 'neu', 2: 'pos'})
 
-    return data_subreddit
+
+    return df_result 
+
+
+
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -460,7 +509,7 @@ def preprocess_texts(data, length):
     
     """
     
-
+    OG_len = len(data)
     # filter deleted texts 
     data = data[data['body_child'] != "[deleted]"]
     data = data[data['body_child'] != "[removed]"]
@@ -483,11 +532,17 @@ def preprocess_texts(data, length):
     data = data[data['submission_text'] != ""]
     data = data[data['submission_text'].notna()]
     
+    print("Deleting all interactions with empty texts removed", OG_len - len(data), "interactions. Share: ", (OG_len - len(data))/OG_len)
+    print("Kept", len(data), "interactions.")
 
     # filter deleted authors
+    OG_len = len(data)
     data = data[data['author_parent'] != "[deleted]"]
     data = data[data['author_child'] != "[deleted]"]
     data = data[data['author_submission'] != "[deleted]"]
+
+    print("Deleting empty authors deleted", OG_len - len(data), "interactions. Share: ", (OG_len - len(data))/OG_len)
+    print("Kept", len(data), "interactions.")
 
     # filter texts that have been written by a bot = appear too often
     # should already be removes, as body_parent and authors will be deleted/removed
@@ -500,7 +555,7 @@ def preprocess_texts(data, length):
     #data = data[~data['body_child'].isin(texts_child_remove)]
     #data = data[~data['body_parent'].isin(texts_parents_remove)]
 
-
+    
     data = data.reset_index(drop = True)
 
     # cleaning
@@ -554,14 +609,23 @@ def preprocess_texts(data, length):
         else:
             comments_to_remove.append(idx)
 
-    print(f"Length {length} removes {len(comments_to_remove) + len(replies_to_remove)} interactions") 
+    OG_len = len(data)
     data = data.loc[~data.index.isin(replies_to_remove)]
     data = data.loc[~data.index.isin(comments_to_remove)]
     data = data.reset_index(drop = True)
 
+    print(f"Length {length} removes {OG_len - len(data)} interactions") 
+    
+    print(f"Kept {len(data)} interactions") 
+    
+
+    OG_len = len(data)
     data = data.drop_duplicates(subset = ["body_child", "body_parent", "author_parent", "author_child"],
                                           keep = 'last').reset_index(drop = True)
-    
+    print("Drop duplicates (in parent & child text and author) removed", OG_len - len(data), "interactions. Share: ", (OG_len - len(data))/OG_len)
+    print("Kept", len(data), "interactions.")
+
+    OG_len = len(data)
     # need to check again, after cleaning
     data = data[data['body_child'] != ""].reset_index(drop = True)
     data = data[data['body_parent'] != ""].reset_index(drop = True)
@@ -570,8 +634,28 @@ def preprocess_texts(data, length):
     data = data[data['body_parent'] != " "].reset_index(drop = True)
     data = data[data['submission_text'] != " "].reset_index(drop = True)
     
-   
+    print("After text cleaning", OG_len - len(data), "interactions had empty texts and got removed. Share: ", (OG_len - len(data))/OG_len)
+    print("Kept", len(data), "interactions.")
+
+
     return data
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
