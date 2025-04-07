@@ -558,13 +558,13 @@ def preprocess_texts(data, length):
     
     data = data.reset_index(drop = True)
 
-    # cleaning
     data['body_child'] = data['body_child'].str.replace(r'\n', " ", regex = True) # remove \n
     data['body_child'] = data['body_child'].str.replace(r' +', " ", regex = True) # remove multiple spaces
     data['body_child'] = data['body_child'].str.replace(r'u/\w+', "", regex = True) # remove user mentions
     data['body_child'] = data['body_child'].str.replace(r'r/\w+', "", regex = True) # remove subreddit mentions
     data['body_child'] = data['body_child'].str.replace(r'/r/\w+', "", regex = True) # remove subreddit mentions
     data['body_child'] = data['body_child'].str.replace(r'https?://\S+', "", regex = True) # remove URLS
+    data['body_child'] = data['body_child'].str.replace(r'\b(?!(?:[A-Z]\.){1,3}$)(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b', "", regex = True)# remove .com, .uk etc links
     data['body_child'] = data['body_child'].str.replace(r'&amp', "and", regex = True) # replace &amp
     data['body_child'] = data['body_child'].str.replace(r'&gt', ">", regex = True) # replace &gt
     #data['body_child'] = data['body_child'].str.replace(r'([@])', r' \1 ', regex = True) # separate @ from user mentions
@@ -577,6 +577,7 @@ def preprocess_texts(data, length):
     data['body_parent'] = data['body_parent'].str.replace(r'r/\w+', "", regex = True) # remove subreddit mentions
     data['body_parent'] = data['body_parent'].str.replace(r'/r/\w+', "", regex = True) # remove subreddit mentions
     data['body_parent'] = data['body_parent'].str.replace(r'https?://\S+', "", regex = True) # remove URLS
+    data['body_parent'] = data['body_parent'].str.replace(r'\b(?!(?:[A-Z]\.){1,3}$)(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b', "", regex = True)# remove .com, .uk etc links
     data['body_parent'] = data['body_parent'].str.replace('&amp', "and", regex = True) # replace &amp
     data['body_parent'] = data['body_parent'].str.replace('&gt', ">", regex = True) # replace &gt
     #data['body_parent'] = data['body_parent'].str.replace(r'([@])', r' \1 ', regex = True) # separate @ from user mentions
@@ -588,11 +589,13 @@ def preprocess_texts(data, length):
     data['submission_text'] = data['submission_text'].str.replace(r'r/\w+', "", regex = True) # remove subreddit mentions
     data['submission_text'] = data['submission_text'].str.replace(r'/r/\w+', "", regex = True) # remove subreddit mentions
     data['submission_text'] = data['submission_text'].str.replace(r'https?://\S+', "", regex = True) # remove URLS
+    data['submission_text'] = data['submission_text'].str.replace(r'\b(?!(?:[A-Z]\.){1,3}$)(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b', "", regex = True)# remove .com, .uk etc links
     data['submission_text'] = data['submission_text'].str.replace('&amp', "and", regex = True) # replace &amp
     data['submission_text'] = data['submission_text'].str.replace('&gt', ">", regex = True) # replace &gt
     #data['submission_text'] = data['submission_text'].str.replace(r'([@])', r' \1 ', regex = True) # separate @ from user mentions
     data['submission_text'] = data['submission_text'].str.replace(r"[^a-zA-Z0-9\s.,!?'-]", '', regex = True) # replace special characters
 
+    
     # filter too short texts
     replies_to_remove = []
     comments_to_remove = []
