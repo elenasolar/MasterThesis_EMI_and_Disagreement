@@ -7,5 +7,16 @@
 /R_MasterThesis/output/
 /code/EMI/output
 
-/code/preprocessing/PoliticalDiscussion/output
+/code/preprocessing/PoliticalDiscussion/output/
 /code/preprocessing/politics/output
+
+
+# too large files
+/code/data_preprocessing/PoliticalDiscussion/output/
+/code/data_preprocessing/politics/output/
+/code/data_preprocessing/PolitialDebat/output/
+/code/data_preprocessing/NeutralPolitics/output/
+/code/data_preprocessing/Askpolitics/output/
+/code/data_preprocessing/Ask_Politics/output/
+
+/code/user_ideology/user_subreddit_activity.jsonl
