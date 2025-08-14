@@ -7,6 +7,7 @@
 *.pdf
 *.png
 *.csv
+*.bin
 
 /data/reddit/
 /R_MasterThesis/output/
