@@ -8,6 +8,7 @@
 *.png
 *.csv
 *.bin
+*.zip
 
 /data/reddit/
 /R_MasterThesis/output/
