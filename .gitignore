@@ -12,6 +12,9 @@
 /R_MasterThesis/output/
 /code/EMI/output
 
+# Proposal Checks
+/code/analysis/EMI_and_Date.ipynb
+
 
 # too large files
 /code/data_preprocessing/PoliticalDiscussion/output/
