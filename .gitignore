@@ -28,8 +28,7 @@
 
 
 # EMI
-/code/EMI/other_stuff
-
+code/EMI/reddit_data/00_embedding_models/embedding_files/glove.42B.300d.zip
 
 # saved R workspaces
 /code/analysis/R-model_fitting.RData
