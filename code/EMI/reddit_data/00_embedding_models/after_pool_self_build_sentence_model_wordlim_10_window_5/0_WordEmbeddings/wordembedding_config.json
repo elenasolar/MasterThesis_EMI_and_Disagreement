@@ -1,0 +1,5 @@
+{
+  "tokenizer_class": "sentence_transformers.models.tokenizer.WhitespaceTokenizer.WhitespaceTokenizer",
+  "update_embeddings": false,
+  "max_seq_length": 1000000
+}
