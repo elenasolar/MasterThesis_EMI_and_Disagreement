@@ -1,14 +1,16 @@
-.Rproj.user
-.Rhistory
-.RData
-.Ruserdata
+*.Rproj.user
+*.Rproj
+*.Rhistory
+*.RData
+*.Ruserdata
+
+*.pdf
+*.png
+*.csv
 
 /data/reddit/
 /R_MasterThesis/output/
 /code/EMI/output
-
-/code/preprocessing/PoliticalDiscussion/output/
-/code/preprocessing/politics/output
 
 
 # too large files
@@ -20,3 +22,11 @@
 /code/data_preprocessing/Ask_Politics/output/
 
 /code/user_ideology/user_subreddit_activity.jsonl
+
+
+# EMI
+/code/EMI/other_stuff
+
+
+# saved R workspaces
+/code/analysis/R-model_fitting.RData
