@@ -14,7 +14,7 @@
 # exception of final analysis data
 !code/data/analysis_data/df_all_non_clipped.zip
 !code/data/analysis_data/interactions_all_non_clipped.zip
-!code/data/analysis_data/mod_interactions_all_non_clipped.zip
+!code/data/analysis_data/mod_interactions_non_clipped.zip
 !code/data/analysis_data/interactions_non_clipped.zip
 
 # exclude data folders
