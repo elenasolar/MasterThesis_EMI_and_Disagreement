@@ -98,7 +98,6 @@ model_h2_full_2 <- lmer(reply_EMI ~ submission_EMI + comment_EMI + factor(Mod_Du
 
 # checked nesting the random effects: could not converge
 
-
 isSingular(model_h2_full_2) # no
 summary(model_h2_full_2)# -> convergence issue! 0.04 > 0.002, nearly unidentifybale
 
@@ -396,6 +395,33 @@ ggsave("H2_plots_OLS/H2_FixedEffect_comments.png", p2, width = 12, height = 6, d
 
 
 
+# Significant difference in coefficients test?
+# manually
+coefs <- fixef(model_h2_full_2)   
+vc    <- vcov(model_h2_full_2)    
 
+# contrast vector: -1 * submission_EMI + 1 * comment_EMI
+L <- c(0, -1, 1, rep(0, length(coefs)-3)) 
 
+est <- as.numeric(sum(L * coefs))
+se  <- as.numeric(sqrt(t(L) %*% vc %*% L))
+z   <- est / se
 
+# p-values
+p_two_sided <- 2 * (1 - pnorm(abs(z)))
+p_one_sided <- 1 - pnorm(z)
+
+# 95% CI (normal approximation)
+alpha <- 0.05
+z_crit <- qnorm(1 - alpha/2)
+ci_lower <- est - z_crit * se
+ci_upper <- est + z_crit * se
+
+list(
+  estimate = est,
+  SE = se,
+  z = z,
+  p_two_sided = p_two_sided,
+  p_one_sided = p_one_sided,
+  CI_95 = c(ci_lower, ci_upper)
+)

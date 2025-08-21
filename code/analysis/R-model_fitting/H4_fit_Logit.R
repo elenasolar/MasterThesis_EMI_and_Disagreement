@@ -372,6 +372,81 @@ levels(model_data_Ask_Politics$Mod_Dummy)
 table(model_data_PoliticalDebate$Mod_Dummy)
 
 
+# -----------------------------------------------
+# Signifiance test of same vs. different ideology
+#------------------------------------------------
+
+analyze_h4_logit <- function(model) {
+  
+  coefs <- summary(model)$coefficients
+  baseline <- coefs["comment_EMI", "Estimate"]
+  se_baseline <- coefs["comment_EMI", "Std. Error"]
+  
+  # Interaction coefficients
+  interactions <- coefs[grep("comment_EMI:ideology_group", rownames(coefs)), ]
+  
+  slopes <- c(
+    "PL & CL" = baseline,
+    "PR & CL" = baseline + interactions["comment_EMI:ideology_groupPR & CL", "Estimate"],
+    "PL & CR" = baseline + interactions["comment_EMI:ideology_groupPL & CR", "Estimate"],
+    "PR & CR" = baseline + interactions["comment_EMI:ideology_groupPR & CR", "Estimate"]
+  )
+  
+  ses <- c(
+    "PL & CL" = se_baseline,
+    "PR & CL" = sqrt(se_baseline^2 + interactions["comment_EMI:ideology_groupPR & CL", "Std. Error"]^2),
+    "PL & CR" = sqrt(se_baseline^2 + interactions["comment_EMI:ideology_groupPL & CR", "Std. Error"]^2),
+    "PR & CR" = sqrt(se_baseline^2 + interactions["comment_EMI:ideology_groupPR & CR", "Std. Error"]^2)
+  )
+  
+  # Define within- and cross-ideology groups
+  within <- c("PL & CL", "PR & CR")
+  cross <- c("PR & CL", "PL & CR")
+  
+  within_mean <- mean(slopes[within])
+  cross_mean <- mean(slopes[cross])
+  
+  SE_diff <- sqrt(mean(ses[within])^2 + mean(ses[cross])^2)
+  z_value <- (within_mean - cross_mean) / SE_diff
+  p_value <- 2 * (1 - pnorm(abs(z_value)))
+  
+  data.frame(
+    Within_mean = within_mean,
+    Cross_mean = cross_mean,
+    Difference = within_mean - cross_mean,
+    SE_diff = SE_diff,
+    z = z_value,
+    p = p_value
+  )
+}
+
+models_test <- list(
+  model_h4_2_Ask_Politics_logit,
+  model_h4_2_PoliticalDebate_logit,
+  model_h4_2_politics_logit,
+  model_h4_2_Askpolitics_logit,
+  model_h4_2_PoliticalDiscussion_logit,
+  model_h4_2_NeutralPolitics_logit
+)
+
+results <- lapply(models_test, analyze_h4_logit) %>% bind_rows()
+results
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
