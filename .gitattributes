@@ -3,3 +3,4 @@ code/data/analysis_data/df_all_non_clipped.csv filter=lfs diff=lfs merge=lfs -te
 code/data/analysis_data/df_all_non_clipped.zip filter=lfs diff=lfs merge=lfs -text
 code/data/analysis_data/interactions_all_non_clipped.zip filter=lfs diff=lfs merge=lfs -text
 code/data/analysis_data/interactions_non_clipped.zip filter=lfs diff=lfs merge=lfs -text
+code/data/analysis_data/mod_interactions_non_clipped.zip filter=lfs diff=lfs merge=lfs -text
