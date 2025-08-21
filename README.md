@@ -1,5 +1,8 @@
 # Bridging Political Divides: Quantifying the Influence of Evidence- and Intuition-Based Language on Disagreement
 
+(Note: reporitory is still work in progress)
+
+
 This repository contains the code to replicate the findings of my Master Thesis in Social and Economic Data Science at the University of Konstanz.
 
 
