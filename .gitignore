@@ -12,7 +12,7 @@
 *.zip
 
 # exception of final analysis data
-!code/data/analysis_data/df_all_non_clipped.csv
+!code/data/analysis_data/df_all_non_clipped.zip
 
 # exclude data folders
 /data/reddit/
