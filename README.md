@@ -29,4 +29,20 @@ The three annotators performance is compared in `code/llama/Validation/PCE_Inves
 * `code/user_ideology/compute_ideology_scores.ipynb` computes the ideology score per user in our sample. Final positionings for our 800.000 users are saved to `code/user_ideology/user_positioning.csv`. Subsequently, `code/user_ideology/Add_Ideology_Scores.ipynb` adds all user ideology scores to the df of all interactions for analysis.
 * `code/user_ideology/user_subreddit_activity.jsonl`: file containing the post frequencies of all users in our sample across all subreddits. Data was kindly provided by Dr. João Pinheiro Neto.
 * `code/user_ideology/scores.csv` contains the subreddits ideology scores, computed by [Waller & Anderson](https://github.com/CSSLab/social-dimensions)
-* 
+
+## **EMI**
+* `code/EMI/reddit-data_preprocess.ipynb` applies the embedding model preprocessing to the six subreddits data and computes plot to investigate text length (see Supplementary Materials, Chapter 4)
+* `code/EMI/reddit_data/00_embedding_models/embedding_files` is supposed to contain the base GloVe embeddings which are publicly available [here](https://nlp.stanford.edu/projects/glove/). The fine-tuned and self-build embedding vectors will be saved to this folder as well.
+* `code/EMI/reddit_data/00_embedding_models` contains notebooks to fine-tune the GloVe embedding model (`advanced_reddit_fine-tune-embeddings.ipynb`) and transform it into a S-BERT model (`advanced_reddit_embeddings-to-sbert.ipynb`).
+The resulting fine-tuned and self-build embedding model are saved to the two respective folders. 
+* `code/EMI/reddit_data/01_after_pool` contains notebooks for the analysis of dictionary embeddings (see Supplementary Materials, Section  6.1), word level embeddings (Supplementary Materials, Section 6.3) as well as document level embedding scores (Supplementary Materials, Section 6.4).
+Furthermore, Bootstrapping analysis notebooks are included (Supplemenraty Materials, Section 6.2)
+* `code/EMI/reddit_data/01_after_pool/reddit_EMI_Computation.ipynb` is the notebook to compute EMI scores for each text in two compute orders and with clipping, as well as no clipping.
+The notebook also contains the investigations of different bin counts (see Supplementary Materials, Section 6.4.1)
+* `code/EMI/reddit_data/01_after_pool/Order_and_Clipping.ipynb` compares the compute order of EMI scores (first compute EMI, then z-transform vs. z-transforing similarity scores, them computing EMI) as well as the comparison of clipped vs. non-clipped scores.
+* `code/EMI/reddit_data/01_after_pool/Make_analysis_data.ipynb` combined the final classification labels, with the interaction data (containing EMI and user ideology scores) in two variations: clipped and non-clipped. Further analysis only uses the non-clipped scores.
+
+## **Analyis**
+* `code/analysis/keyness_non_clipped.ipynb` is the notebook to compute the three pairwise keyness scatter plots
+* `code/analysis/R-model_fitting` contains four files in order to fit the linear and logistic mixed effect models for our research hypothesis.
+* `code/analysis/Interprete_logit_Coefficients.ipynb` transforms the logit coefficients for easier interpretability
