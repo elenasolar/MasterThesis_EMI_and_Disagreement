@@ -14,10 +14,16 @@ This repository contains the code to replicate the findings of my Master Thesis 
 ## **Data Preprocessing**
 
 * needed preprocesing functions are defined in and imported from `code/data_preprocessing/preprocessing_functions.py`
-* `code/data_preprocessing/subreddit_xx/` contains the notebooks to import and preprocess the raw reddit data per subreddit. Also, creates and expots the data frames needed in `Empty_non_Empty_Plots.ipynb`.
+* `code/data_preprocessing/subreddit_xx/` contains the notebooks to import and preprocess the raw reddit data per subreddit. Also, creates and expots the data frames needed in `code/data_preprocessing/Empty_non_Empty_Plots.ipynb` (comparison of empty vs. non-empty submissions).
 * final preprocessed data frames are saved as `.csv` to `code/data/new_preprocessing/...`
 
 ## **Classification Model**
 
 * `code/llama/Causal` contains the initial tests of two vs. three labels of the Causal LM, as well as the prompt style comparisons
-* `code/llama/Classification/two_labels` contains three version of fine-tuning architectures $\to$ `attention_FFN_LoRA`-folder contains notebooks for training and applying the final model to the six subreddits. Classified labels are saved to `code/data/classified_labels/incl_true_probability/`
+* `code/llama/Classification/two_labels` contains three version of fine-tuning architectures $\to$ `attention_FFN_LoRA`-folder contains notebooks for training and applying the final model to the six subreddits. Classified labels are saved to `code/data/classified_labels/incl_true_probability/...`
+* `code/llama/Validation` contains notebooks to sample validation sample of 10 interactions per subreddit. These were manually classified by three annotators.
+The three annotators performance is compared in `code/llama/Validation/PCE_Investigation.ipynb`
+* three notebooks investigating the OOD performance of the three Llama_3.1_8B architectures
+
+## **User Ideology**
+* 
