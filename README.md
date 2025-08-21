@@ -26,4 +26,7 @@ The three annotators performance is compared in `code/llama/Validation/PCE_Inves
 * three notebooks investigating the OOD performance of the three Llama_3.1_8B architectures
 
 ## **User Ideology**
+* `code/user_ideology/compute_ideology_scores.ipynb` computes the ideology score per user in our sample. Final positionings for our 800.000 users are saved to `code/user_ideology/user_positioning.csv`. Subsequently, `code/user_ideology/Add_Ideology_Scores.ipynb` adds all user ideology scores to the df of all interactions for analysis.
+* `code/user_ideology/user_subreddit_activity.jsonl`: file containing the post frequencies of all users in our sample across all subreddits. Data was kindly provided by Dr. João Pinheiro Neto.
+* `code/user_ideology/scores.csv` contains the subreddits ideology scores, computed by [Waller & Anderson](https://github.com/CSSLab/social-dimensions)
 * 
