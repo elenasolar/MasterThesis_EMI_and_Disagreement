@@ -1,3 +1,4 @@
+# ignore all files with the following endings
 *.Rproj.user
 *.Rproj
 *.Rhistory
@@ -10,6 +11,10 @@
 *.bin
 *.zip
 
+# exception of final analysis data
+!code/data/analysis_data/df_all_non_clipped.csv
+
+# exclude data folders
 /data/reddit/
 /R_MasterThesis/output/
 /code/EMI/output
@@ -34,3 +39,4 @@ code/EMI/reddit_data/00_embedding_models/embedding_files/glove.42B.300d.zip
 
 # saved R workspaces
 /code/analysis/R-model_fitting.RData
+.Rproj.user
