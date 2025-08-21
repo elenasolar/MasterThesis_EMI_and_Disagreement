@@ -43,6 +43,7 @@ The notebook also contains the investigations of different bin counts (see Suppl
 * `code/EMI/reddit_data/01_after_pool/Make_analysis_data.ipynb` combined the final classification labels, with the interaction data (containing EMI and user ideology scores) in two variations: clipped and non-clipped. Further analysis only uses the non-clipped scores.
 
 ## **Analyis**
+* required analysis datasets are provided as zip files in `code/data/analysis_data/` and need to be unzipped
 * `code/analysis/Subreddits_Mod_Human.ipynb` contains the analysis of subreddit's contributions to interactions and submissions as well as the comparison of human versus moderator started discussions (see Supplementary Materialy, Section 8.1 and 8.2)
 * `code/analysis/Correlation_analysis_non_clipped.ipynb` pairwise correlation analysis for EMI and Stance, EMI and Ideology and Ideology and Stance (see Supplementary Materials, Section 8.3 - 8.5)
 * `code/analysis/Active Discussions.ipynb` is the analysis focused on the most active discussions
